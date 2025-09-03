@@ -53,7 +53,7 @@ $remoteUrl = "https://github.com/$username/ActivShop.git"
 git remote remove origin 2>$null
 
 # Ajouter le nouveau remote
-git remote add origin $remoteUrl
+git remote add origin $remoteUrlHounnouveM
 
 # Pousser vers GitHub
 Write-Host "🚀 Push vers GitHub..." -ForegroundColor Yellow
