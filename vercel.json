@@ -19,7 +19,6 @@
   "env": {
     "NODE_ENV": "production"
   },
-  "functions": {},
   "regions": ["cdg1"],
   "public": true
 }
