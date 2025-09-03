@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "nom": "Créatine Monohydrate Premium",
+    "categorie": "Suppléments",
+    "prix": 24.99,
+    "description": "Créatine micronisée de haute pureté pour performance et récupération.",
+    "avantages": [
+      "Améliore la force et la puissance",
+      "Accélère la récupération",
+      "Qualité Lab-Testée"
+    ],
+    "videos": [
+      { "titre": "Comment l'utiliser", "plateforme": "YouTube", "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ" }
+    ],
+    "image": "creatine-product.jpg"
+  },
+  {
+    "id": 2,
+    "nom": "Corde à Sauter PRO",
+    "categorie": "Accessoires",
+    "prix": 14.99,
+    "description": "Corde à sauter ajustable, roulements fluides, idéale HIIT & cardio.",
+    "avantages": [
+      "Ajustable",
+      "Ultra fluide",
+      "Poignées antidérapantes"
+    ],
+    "videos": [],
+    "image": "jump-rope-product.jpg"
+  },
+  {
+    "id": 3,
+    "nom": "Bandes de Résistance (Set)",
+    "categorie": "Accessoires",
+    "prix": 19.99,
+    "description": "Set de 5 bandes de résistance pour entraînement complet.",
+    "avantages": [
+      "Différents niveaux de résistance",
+      "Léger et portable",
+      "Latex de qualité"
+    ],
+    "videos": [],
+    "image": "resistance-bands-product.jpg"
+  }
+]

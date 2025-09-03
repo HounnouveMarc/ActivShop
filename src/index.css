@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* ActivShop Bénin Design System */
+    --background: 0 0% 5%; /* Noir profond #0D0D0D */
+    --foreground: 0 0% 100%; /* Blanc pur #FFFFFF */
+
+    --card: 0 0% 10%; /* Gris foncé #1A1A1A */
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
+
+    /* Brand Primary - Rouge Énergie */
+    --primary: 0 100% 47%; /* Rouge énergie #E50914 */
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 0 100% 50%;
+
+    /* Brand Secondary - Or Prestige */
+    --secondary: 45 100% 50%; /* Or prestige #FFD700 */
+    --secondary-foreground: 0 0% 5%;
+
+    /* Brand Accent - Rouge Énergie (variante) */
+    --accent: 0 100% 47%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Neutral - Gris professionnels */
+    --muted: 0 0% 13%; /* Gris foncé #222222 */
+    --muted-foreground: 0 0% 88%; /* Gris clair #E0E0E0 */
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 13%; /* Gris foncé #222222 */
+    --input: 0 0% 13%;
+    --ring: 0 100% 47%; /* Rouge énergie */
+
+    /* Custom Brand Variables - Nouvelles couleurs */
+    --brand-black: 0 0% 5%; /* Noir profond #0D0D0D */
+    --brand-red: 0 100% 47%; /* Rouge énergie #E50914 */
+    --brand-gold: 45 100% 50%; /* Or prestige #FFD700 */
+    --brand-gray-dark: 0 0% 10%; /* Gris foncé #1A1A1A */
+    --brand-gray-darker: 0 0% 13%; /* Gris plus foncé #222222 */
+    --brand-gray-light: 0 0% 88%; /* Gris clair #E0E0E0 */
+
+    /* Gradients - Nouveaux dégradés professionnels */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--brand-red)), hsl(0 100% 40%));
+    --gradient-gold: linear-gradient(135deg, hsl(var(--brand-gold)), hsl(45 100% 60%));
+    --gradient-power: linear-gradient(135deg, hsl(var(--brand-black)), hsl(var(--brand-red)));
+    --gradient-card: linear-gradient(135deg, hsl(var(--brand-gray-dark)), hsl(var(--brand-gray-darker)));
+
+    /* Shadows - Ombres plus subtiles et professionnelles */
+    --shadow-brand: 0 10px 30px -10px hsl(var(--brand-red) / 0.2);
+    --shadow-gold: 0 10px 30px -10px hsl(var(--brand-gold) / 0.3);
+    --shadow-intense: 0 20px 40px -15px hsl(var(--brand-black) / 0.8);
+    --shadow-card: 0 8px 25px -8px hsl(var(--brand-black) / 0.6);
+
+    /* Animations */
+    --transition-power: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.3s ease-out;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 88%;
+    --sidebar-primary: 0 0% 5%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 13%;
+    --sidebar-accent-foreground: 0 0% 88%;
+    --sidebar-border: 0 0% 13%;
+    --sidebar-ring: 0 100% 47%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Brand Custom Classes */
+@layer components {
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .gold-gradient {
+    background: var(--gradient-gold);
+  }
+  
+  .power-gradient {
+    background: var(--gradient-power);
+  }
+
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+  
+  .brand-shadow {
+    box-shadow: var(--shadow-brand);
+  }
+  
+  .gold-shadow {
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .intense-shadow {
+    box-shadow: var(--shadow-intense);
+  }
+
+  .card-shadow {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .transition-power {
+    transition: var(--transition-power);
+  }
+  
+  .fitness-card {
+    @apply bg-card border border-border rounded-lg overflow-hidden transition-power hover:card-shadow hover:-translate-y-1;
+  }
+
+  .fitness-card-dark {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    @apply rounded-lg overflow-hidden transition-power hover:card-shadow hover:-translate-y-1;
+  }
+
+  .fitness-bg {
+    background: hsl(var(--background));
+  }
+
+  .fitness-bg-darker {
+    background: hsl(var(--muted));
+  }
+
+  .fitness-gradient {
+    background: var(--gradient-card);
+  }
+  
+  .brand-text-gradient {
+    background: var(--gradient-hero);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Reveal animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: var(--transition-smooth);
+    will-change: opacity, transform;
+  }
+
+  .reveal-up {
+    transform: translateY(16px);
+  }
+
+  .reveal-down {
+    transform: translateY(-16px);
+  }
+
+  .reveal-left {
+    transform: translateX(16px);
+  }
+
+  .reveal-right {
+    transform: translateX(-16px);
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal-up,
+    .reveal-down,
+    .reveal-left,
+    .reveal-right {
+      transition: none;
+      transform: none;
+      opacity: 1;
+    }
+  }
+}

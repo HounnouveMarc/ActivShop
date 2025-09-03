@@ -1,0 +1,32 @@
+[
+  {
+    "tag": "#ForceÉternelle",
+    "posts": 1547,
+    "route": "/boutique"
+  },
+  {
+    "tag": "#CorpsLégendaire",
+    "posts": 892,
+    "route": "/boutique?category=Compléments"
+  },
+  {
+    "tag": "#HéritageForce",
+    "posts": 634,
+    "route": "/communaute"
+  },
+  {
+    "tag": "#EntraînementElite",
+    "posts": 1203,
+    "route": "/boutique?category=Équipements"
+  },
+  {
+    "tag": "#TransformationForce",
+    "posts": 756,
+    "route": "/boutique?search=transformation"
+  },
+  {
+    "tag": "#GuerriersÉternels",
+    "posts": 445,
+    "route": "/boutique?category=Vêtements"
+  }
+]
