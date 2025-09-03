@@ -33,10 +33,10 @@ export interface Order {
 }
 
 class SimpleOrderService {
-  // Configuration simple - à modifier selon vos besoins
-  private readonly WHATSAPP_NUMBER = '+229 771234567'; // Votre numéro WhatsApp
-  private readonly FACEBOOK_PAGE = 'ActivShopBenin'; // Votre page Facebook
-  private readonly INSTAGRAM_USERNAME = 'activshop_benin'; // Votre username Instagram
+  // Identifiants fixes du fournisseur
+  private readonly WHATSAPP_NUMBER = '22948740015'; // Numéro WhatsApp du fournisseur
+  private readonly FACEBOOK_PAGE = 'https://www.facebook.com/share/v/1GZFPuWTcd/'; // Page Facebook du fournisseur
+  private readonly INSTAGRAM_USERNAME = 'https://www.instagram.com/activshop_bj'; // Instagram du fournisseur
 
   /**
    * Sauvegarde une commande localement (localStorage)
@@ -68,7 +68,8 @@ class SimpleOrderService {
   async sendWhatsAppOrder(order: Order): Promise<boolean> {
     try {
       const message = this.formatOrderMessage(order);
-      const phoneNumber = order.platformInfo.whatsapp.replace(/\D/g, '') || this.WHATSAPP_NUMBER.replace(/\D/g, '');
+      // Utiliser TOUJOURS le numéro du fournisseur, pas celui du client
+      const phoneNumber = this.WHATSAPP_NUMBER.replace(/\D/g, '');
       
       // URL WhatsApp avec le message formaté
       const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`;
@@ -90,8 +91,8 @@ class SimpleOrderService {
     try {
       const message = this.formatOrderMessage(order);
       
-      // Redirection vers la page Facebook avec message
-      const facebookUrl = `https://www.facebook.com/${this.FACEBOOK_PAGE}`;
+      // Redirection vers la page Facebook du fournisseur
+      const facebookUrl = this.FACEBOOK_PAGE;
       window.open(facebookUrl, '_blank');
       
       // Afficher le message dans une alerte pour copier
@@ -113,8 +114,8 @@ class SimpleOrderService {
     try {
       const message = this.formatOrderMessage(order);
       
-      // Redirection vers Instagram
-      const instagramUrl = `https://www.instagram.com/${this.INSTAGRAM_USERNAME}`;
+      // Redirection vers Instagram du fournisseur
+      const instagramUrl = this.INSTAGRAM_USERNAME;
       window.open(instagramUrl, '_blank');
       
       // Afficher le message dans une alerte pour copier
