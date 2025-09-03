@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Search, Filter, ShoppingCart, Phone, X, Minus, Plus, MessageCircle, Facebook, Instagram, CheckCircle, AlertCircle } from "lucide-react";
 import { simpleOrderService, type Order, type OrderItem } from "@/lib/simpleOrderService";
+import { BENIN_CITIES, getCitySuggestions, getMainCities } from "@/data/beninCities";
 // Données produits chargées via fetch depuis public/data/products.json
 
 // Import des images de produits
@@ -40,10 +41,8 @@ const Shop = () => {
   const [selectedContactMethod, setSelectedContactMethod] = useState("");
   const [clientInfo, setClientInfo] = useState({
     nom: "",
-    telephone: "",
     email: "",
-    adresse: "",
-    ville: ""
+    localisation: ""
   });
   const [platformInfo, setPlatformInfo] = useState({
     whatsapp: "",
@@ -55,6 +54,12 @@ const Shop = () => {
   const [isSubmittingOrder, setIsSubmittingOrder] = useState<boolean>(false);
   const [orderSubmissionStatus, setOrderSubmissionStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [submittedOrder, setSubmittedOrder] = useState<Order | null>(null);
+  
+  // États pour la gestion des villes
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [citySearchTerm, setCitySearchTerm] = useState("");
+  const [selectedCity, setSelectedCity] = useState("");
+  const [showCustomCityInput, setShowCustomCityInput] = useState(false);
   // Référence au bouton panier du header pour détecter sa visibilité
   const headerCartRef = useRef<HTMLButtonElement | null>(null);
   // État d'affichage du bouton flottant (visible lorsque le panier du haut sort de l'écran)
@@ -202,6 +207,21 @@ const Shop = () => {
     setShowFloatingCart(true);
   }, []);
 
+  // Fermer le dropdown des villes quand on clique ailleurs
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.city-dropdown-container')) {
+        setShowCityDropdown(false);
+      }
+    };
+
+    if (showCityDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showCityDropdown]);
+
   // Handlers drag (mouse + touch)
   const onStartDrag = (clientX: number, clientY: number) => {
     if (!floatingRef.current) return;
@@ -265,6 +285,27 @@ const Shop = () => {
     });
   };
 
+  // Fonctions pour la gestion des villes
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    setClientInfo(prev => ({ ...prev, localisation: city }));
+    setShowCityDropdown(false);
+    setCitySearchTerm("");
+    setShowCustomCityInput(false);
+  };
+
+  const handleCustomCityInput = (value: string) => {
+    setClientInfo(prev => ({ ...prev, localisation: value }));
+    setSelectedCity("");
+  };
+
+  const getDisplayedCities = () => {
+    if (citySearchTerm && citySearchTerm.length >= 2) {
+      return getCitySuggestions(citySearchTerm);
+    }
+    return getMainCities();
+  };
+
   const handleContactSupplier = async () => {
     if (!selectedContactMethod) {
       setShowContactForm(true);
@@ -312,10 +353,14 @@ const Shop = () => {
       setTimeout(() => {
         setShowContactForm(false);
         setSelectedContactMethod("");
-        setClientInfo({ nom: "", telephone: "", email: "", adresse: "", ville: "" });
+        setClientInfo({ nom: "", email: "", localisation: "" });
         setPlatformInfo({ whatsapp: "", facebook: "", instagram: "" });
         setOrderSubmissionStatus('idle');
         setSubmittedOrder(null);
+        setSelectedCity("");
+        setCitySearchTerm("");
+        setShowCustomCityInput(false);
+        setShowCityDropdown(false);
       }, 3000);
 
     } catch (error) {
@@ -506,41 +551,82 @@ const Shop = () => {
                                 </div>
                               </div>
 
-                              {/* Formulaire d'informations client */}
+                              {/* Formulaire d'informations client simplifié */}
                               <div>
                                 <h4 className="font-semibold text-foreground mb-3">Vos informations de contact :</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="space-y-3">
                                   <Input
-                                    placeholder="Nom complet"
+                                    placeholder="Nom complet *"
                                     value={clientInfo.nom}
                                     onChange={(e) => setClientInfo(prev => ({ ...prev, nom: e.target.value }))}
                                     className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
                                   />
-                                  <Input
-                                    placeholder="Téléphone"
-                                    value={clientInfo.telephone}
-                                    onChange={(e) => setClientInfo(prev => ({ ...prev, telephone: e.target.value }))}
-                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                  />
+                                  
                                   <Input
                                     placeholder="Email (optionnel)"
                                     value={clientInfo.email}
                                     onChange={(e) => setClientInfo(prev => ({ ...prev, email: e.target.value }))}
                                     className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
                                   />
-                                  <Input
-                                    placeholder="Ville"
-                                    value={clientInfo.ville}
-                                    onChange={(e) => setClientInfo(prev => ({ ...prev, ville: e.target.value }))}
-                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                  />
+                                  
+                                  {/* Sélection de localisation optionnelle */}
+                                  <div className="relative city-dropdown-container">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
+                                      Localisation (optionnel)
+                                    </label>
+                                    <div className="relative">
+                                      <Input
+                                        placeholder="Sélectionnez votre ville"
+                                        value={selectedCity || clientInfo.localisation || ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+                                          setCitySearchTerm(value);
+                                          setClientInfo(prev => ({ ...prev, localisation: value }));
+                                        }}
+                                        onFocus={() => setShowCityDropdown(true)}
+                                        className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
+                                      />
+                                      
+                                      {/* Dropdown des villes */}
+                                      {showCityDropdown && (
+                                        <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                                          {getDisplayedCities().map((city, index) => (
+                                            <button
+                                              key={index}
+                                              type="button"
+                                              onClick={() => handleCitySelect(city)}
+                                              className="w-full px-4 py-2 text-left text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+                                            >
+                                              {city}
+                                            </button>
+                                          ))}
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setShowCustomCityInput(true);
+                                              setSelectedCity("");
+                                              setClientInfo(prev => ({ ...prev, localisation: "" }));
+                                              setShowCityDropdown(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-primary hover:bg-muted focus:bg-muted focus:outline-none border-t border-border"
+                                          >
+                                            Autre...
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Input personnalisé pour "Autre" */}
+                                    {showCustomCityInput && (
+                                      <Input
+                                        placeholder="Saisissez votre ville"
+                                        value={clientInfo.localisation || ""}
+                                        onChange={(e) => handleCustomCityInput(e.target.value)}
+                                        className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted mt-2"
+                                      />
+                                    )}
+                                  </div>
                                 </div>
-                                <Input
-                                  placeholder="Adresse complète"
-                                  value={clientInfo.adresse}
-                                  onChange={(e) => setClientInfo(prev => ({ ...prev, adresse: e.target.value }))}
-                                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted mt-3"
-                                />
                               </div>
 
                               {/* Informations de la plateforme choisie */}
@@ -569,13 +655,13 @@ const Shop = () => {
                               {/* Bouton d'envoi */}
                               <Button 
                                 className={`w-full font-semibold py-3 text-lg ${
-                                  selectedContactMethod && clientInfo.nom && clientInfo.telephone && clientInfo.ville && platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]
+                                  selectedContactMethod && clientInfo.nom && platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]
                                     ? `bg-gradient-to-r ${contactMethods.find(m => m.id === selectedContactMethod)?.color} hover:${contactMethods.find(m => m.id === selectedContactMethod)?.hoverColor} text-white`
                                     : "bg-muted text-muted-foreground cursor-not-allowed"
                                 }`}
                                 size="lg"
                                 onClick={handleContactSupplier}
-                                disabled={!selectedContactMethod || !clientInfo.nom || !clientInfo.telephone || !clientInfo.ville || !platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]}
+                                disabled={!selectedContactMethod || !clientInfo.nom || !platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]}
                               >
                                 <Phone className="w-5 h-5 mr-3" />
                                 Envoyer ma commande via {selectedContactMethod ? contactMethods.find(m => m.id === selectedContactMethod)?.name : "..."}
@@ -588,8 +674,12 @@ const Shop = () => {
                                 onClick={() => {
                                   setShowContactForm(false);
                                   setSelectedContactMethod("");
-                                  setClientInfo({ nom: "", telephone: "", email: "", adresse: "", ville: "" });
+                                  setClientInfo({ nom: "", email: "", localisation: "" });
                                   setPlatformInfo({ whatsapp: "", facebook: "", instagram: "" });
+                                  setSelectedCity("");
+                                  setCitySearchTerm("");
+                                  setShowCustomCityInput(false);
+                                  setShowCityDropdown(false);
                                 }}
                                 className="w-full bg-card border-border text-foreground hover:bg-muted"
                               >
@@ -802,41 +892,82 @@ const Shop = () => {
                                 </div>
                               </div>
 
-                              {/* Formulaire d'informations client */}
+                              {/* Formulaire d'informations client simplifié */}
                               <div>
                                 <h4 className="font-semibold text-foreground mb-3">Vos informations de contact :</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="space-y-3">
                                   <Input
-                                    placeholder="Nom complet"
+                                    placeholder="Nom complet *"
                                     value={clientInfo.nom}
                                     onChange={(e) => setClientInfo(prev => ({ ...prev, nom: e.target.value }))}
                                     className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
                                   />
-                                  <Input
-                                    placeholder="Téléphone"
-                                    value={clientInfo.telephone}
-                                    onChange={(e) => setClientInfo(prev => ({ ...prev, telephone: e.target.value }))}
-                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                  />
+                                  
                                   <Input
                                     placeholder="Email (optionnel)"
                                     value={clientInfo.email}
                                     onChange={(e) => setClientInfo(prev => ({ ...prev, email: e.target.value }))}
                                     className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
                                   />
-                                  <Input
-                                    placeholder="Ville"
-                                    value={clientInfo.ville}
-                                    onChange={(e) => setClientInfo(prev => ({ ...prev, ville: e.target.value }))}
-                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                  />
+                                  
+                                  {/* Sélection de localisation optionnelle */}
+                                  <div className="relative city-dropdown-container">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
+                                      Localisation (optionnel)
+                                    </label>
+                                    <div className="relative">
+                                      <Input
+                                        placeholder="Sélectionnez votre ville"
+                                        value={selectedCity || clientInfo.localisation || ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+                                          setCitySearchTerm(value);
+                                          setClientInfo(prev => ({ ...prev, localisation: value }));
+                                        }}
+                                        onFocus={() => setShowCityDropdown(true)}
+                                        className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
+                                      />
+                                      
+                                      {/* Dropdown des villes */}
+                                      {showCityDropdown && (
+                                        <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                                          {getDisplayedCities().map((city, index) => (
+                                            <button
+                                              key={index}
+                                              type="button"
+                                              onClick={() => handleCitySelect(city)}
+                                              className="w-full px-4 py-2 text-left text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+                                            >
+                                              {city}
+                                            </button>
+                                          ))}
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setShowCustomCityInput(true);
+                                              setSelectedCity("");
+                                              setClientInfo(prev => ({ ...prev, localisation: "" }));
+                                              setShowCityDropdown(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-primary hover:bg-muted focus:bg-muted focus:outline-none border-t border-border"
+                                          >
+                                            Autre...
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Input personnalisé pour "Autre" */}
+                                    {showCustomCityInput && (
+                                      <Input
+                                        placeholder="Saisissez votre ville"
+                                        value={clientInfo.localisation || ""}
+                                        onChange={(e) => handleCustomCityInput(e.target.value)}
+                                        className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted mt-2"
+                                      />
+                                    )}
+                                  </div>
                                 </div>
-                                <Input
-                                  placeholder="Adresse complète"
-                                  value={clientInfo.adresse}
-                                  onChange={(e) => setClientInfo(prev => ({ ...prev, adresse: e.target.value }))}
-                                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted mt-3"
-                                />
                               </div>
 
                               {/* Informations de la plateforme choisie */}
@@ -865,13 +996,13 @@ const Shop = () => {
                               {/* Bouton d'envoi */}
                               <Button 
                                 className={`w-full font-semibold py-3 text-lg ${
-                                  selectedContactMethod && clientInfo.nom && clientInfo.telephone && clientInfo.ville && platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]
+                                  selectedContactMethod && clientInfo.nom && platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]
                                     ? `bg-gradient-to-r ${contactMethods.find(m => m.id === selectedContactMethod)?.color} hover:${contactMethods.find(m => m.id === selectedContactMethod)?.hoverColor} text-white`
                                     : "bg-muted text-muted-foreground cursor-not-allowed"
                                 }`}
                                 size="lg"
                                 onClick={handleContactSupplier}
-                                disabled={!selectedContactMethod || !clientInfo.nom || !clientInfo.telephone || !clientInfo.ville || !platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]}
+                                disabled={!selectedContactMethod || !clientInfo.nom || !platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]}
                               >
                                 <Phone className="w-5 h-5 mr-3" />
                                 Envoyer ma commande via {selectedContactMethod ? contactMethods.find(m => m.id === selectedContactMethod)?.name : "..."}
@@ -884,8 +1015,12 @@ const Shop = () => {
                                 onClick={() => {
                                   setShowContactForm(false);
                                   setSelectedContactMethod("");
-                                  setClientInfo({ nom: "", telephone: "", email: "", adresse: "", ville: "" });
+                                  setClientInfo({ nom: "", email: "", localisation: "" });
                                   setPlatformInfo({ whatsapp: "", facebook: "", instagram: "" });
+                                  setSelectedCity("");
+                                  setCitySearchTerm("");
+                                  setShowCustomCityInput(false);
+                                  setShowCityDropdown(false);
                                 }}
                                 className="w-full bg-card border-border text-foreground hover:bg-muted"
                               >
@@ -1070,41 +1205,82 @@ const Shop = () => {
                             </div>
 
                             {/* Formulaire d'informations client */}
-                            <div>
-                              <h4 className="font-semibold text-foreground mb-3">Vos informations de contact :</h4>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <Input
-                                  placeholder="Nom complet"
-                                  value={clientInfo.nom}
-                                  onChange={(e) => setClientInfo(prev => ({ ...prev, nom: e.target.value }))}
-                                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                />
-                                <Input
-                                  placeholder="Téléphone"
-                                  value={clientInfo.telephone}
-                                  onChange={(e) => setClientInfo(prev => ({ ...prev, telephone: e.target.value }))}
-                                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                />
-                                <Input
-                                  placeholder="Email (optionnel)"
-                                  value={clientInfo.email}
-                                  onChange={(e) => setClientInfo(prev => ({ ...prev, email: e.target.value }))}
-                                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                />
-                                <Input
-                                  placeholder="Ville"
-                                  value={clientInfo.ville}
-                                  onChange={(e) => setClientInfo(prev => ({ ...prev, ville: e.target.value }))}
-                                  className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
-                                />
+                                                          <div>
+                                <h4 className="font-semibold text-foreground mb-3">Vos informations de contact :</h4>
+                                <div className="space-y-3">
+                                  <Input
+                                    placeholder="Nom complet *"
+                                    value={clientInfo.nom}
+                                    onChange={(e) => setClientInfo(prev => ({ ...prev, nom: e.target.value }))}
+                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
+                                  />
+                                  
+                                  <Input
+                                    placeholder="Email (optionnel)"
+                                    value={clientInfo.email}
+                                    onChange={(e) => setClientInfo(prev => ({ ...prev, email: e.target.value }))}
+                                    className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
+                                  />
+                                  
+                                  {/* Sélection de localisation optionnelle */}
+                                  <div className="relative city-dropdown-container">
+                                    <label className="block text-sm font-medium text-foreground mb-2">
+                                      Localisation (optionnel)
+                                    </label>
+                                    <div className="relative">
+                                      <Input
+                                        placeholder="Sélectionnez votre ville"
+                                        value={selectedCity || clientInfo.localisation || ""}
+                                        onChange={(e) => {
+                                          const value = e.target.value;
+                                          setCitySearchTerm(value);
+                                          setClientInfo(prev => ({ ...prev, localisation: value }));
+                                        }}
+                                        onFocus={() => setShowCityDropdown(true)}
+                                        className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted"
+                                      />
+                                      
+                                      {/* Dropdown des villes */}
+                                      {showCityDropdown && (
+                                        <div className="absolute z-10 w-full mt-1 bg-card border border-border rounded-md shadow-lg max-h-60 overflow-auto">
+                                          {getDisplayedCities().map((city, index) => (
+                                            <button
+                                              key={index}
+                                              type="button"
+                                              onClick={() => handleCitySelect(city)}
+                                              className="w-full px-4 py-2 text-left text-foreground hover:bg-muted focus:bg-muted focus:outline-none"
+                                            >
+                                              {city}
+                                            </button>
+                                          ))}
+                                          <button
+                                            type="button"
+                                            onClick={() => {
+                                              setShowCustomCityInput(true);
+                                              setSelectedCity("");
+                                              setClientInfo(prev => ({ ...prev, localisation: "" }));
+                                              setShowCityDropdown(false);
+                                            }}
+                                            className="w-full px-4 py-2 text-left text-primary hover:bg-muted focus:bg-muted focus:outline-none border-t border-border"
+                                          >
+                                            Autre...
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Input personnalisé pour "Autre" */}
+                                    {showCustomCityInput && (
+                                      <Input
+                                        placeholder="Saisissez votre ville"
+                                        value={clientInfo.localisation || ""}
+                                        onChange={(e) => handleCustomCityInput(e.target.value)}
+                                        className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted mt-2"
+                                      />
+                                    )}
+                                  </div>
+                                </div>
                               </div>
-                              <Input
-                                placeholder="Adresse complète"
-                                value={clientInfo.adresse}
-                                onChange={(e) => setClientInfo(prev => ({ ...prev, adresse: e.target.value }))}
-                                className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:bg-muted mt-3"
-                              />
-                            </div>
 
                             {/* Informations de la plateforme choisie */}
                             {selectedContactMethod && (
@@ -1132,13 +1308,13 @@ const Shop = () => {
                             {/* Bouton d'envoi */}
                             <Button 
                               className={`w-full font-semibold py-3 text-lg ${
-                                selectedContactMethod && clientInfo.nom && clientInfo.telephone && clientInfo.ville && platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]
+                                selectedContactMethod && clientInfo.nom && clientInfo.localisation && platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]
                                   ? `bg-gradient-to-r ${contactMethods.find(m => m.id === selectedContactMethod)?.color} hover:${contactMethods.find(m => m.id === selectedContactMethod)?.hoverColor} text-white`
                                   : "bg-muted text-muted-foreground cursor-not-allowed"
                               }`}
                               size="lg"
                               onClick={handleContactSupplier}
-                              disabled={!selectedContactMethod || !clientInfo.nom || !clientInfo.telephone || !clientInfo.ville || !platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]}
+                              disabled={!selectedContactMethod || !clientInfo.nom || !clientInfo.localisation || !platformInfo[contactMethods.find(m => m.id === selectedContactMethod)?.field as keyof typeof platformInfo]}
                             >
                               <Phone className="w-5 h-5 mr-3" />
                               Envoyer ma commande via {selectedContactMethod ? contactMethods.find(m => m.id === selectedContactMethod)?.name : "..."}
@@ -1151,7 +1327,7 @@ const Shop = () => {
                               onClick={() => {
                                 setShowContactForm(false);
                                 setSelectedContactMethod("");
-                                setClientInfo({ nom: "", telephone: "", email: "", adresse: "", ville: "" });
+                                setClientInfo({ nom: "", email: "", localisation: "" });
                                 setPlatformInfo({ whatsapp: "", facebook: "", instagram: "" });
                               }}
                               className="w-full bg-card border-border text-foreground hover:bg-muted"

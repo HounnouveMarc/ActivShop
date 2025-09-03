@@ -8,10 +8,8 @@ export interface OrderItem {
 
 export interface ClientInfo {
   nom: string;
-  telephone: string;
-  email: string;
-  adresse: string;
-  ville: string;
+  email?: string; // Optionnel
+  localisation?: string; // Ville optionnelle
 }
 
 export interface PlatformInfo {
@@ -167,7 +165,7 @@ class SimpleOrderService {
     const selectedMethod = this.getContactMethodName(order.contactMethod);
     const platformContact = `${selectedMethod}: ${order.platformInfo[order.contactMethod as keyof PlatformInfo]}`;
     
-    const clientDetails = `👤 **Informations client :**\nNom: ${order.clientInfo.nom}\nTéléphone: ${order.clientInfo.telephone}\nEmail: ${order.clientInfo.email}\nAdresse: ${order.clientInfo.adresse}, ${order.clientInfo.ville}\n\n📱 **Contact ${selectedMethod} :**\n${platformContact}`;
+    const clientDetails = `👤 **Informations client :**\nNom: ${order.clientInfo.nom}${order.clientInfo.email ? `\nEmail: ${order.clientInfo.email}` : ''}${order.clientInfo.localisation ? `\nLocalisation: ${order.clientInfo.localisation}` : ''}\n\n📱 **Contact ${selectedMethod} :**\n${platformContact}`;
 
     return `${greeting} ! 👋\n\nJe souhaite commander les produits suivants :\n\n${cartDetails}\n\n💰 **Prix total : ${total}**\n\n${clientDetails}\n\n🚚 Merci de me confirmer la disponibilité et les modalités de livraison et paiement.\n\n💪 ActivShop Bénin !`;
   }
@@ -241,10 +239,8 @@ class SimpleOrderService {
       'ID Commande',
       'Date/Heure',
       'Nom Client',
-      'Téléphone',
       'Email',
-      'Adresse',
-      'Ville',
+      'Localisation',
       'Méthode Contact',
       'Contact Plateforme',
       'Produits',
@@ -258,10 +254,8 @@ class SimpleOrderService {
         order.id,
         order.timestamp,
         order.clientInfo.nom,
-        order.clientInfo.telephone,
-        order.clientInfo.email,
-        order.clientInfo.adresse,
-        order.clientInfo.ville,
+        order.clientInfo.email || '',
+        order.clientInfo.localisation || '',
         order.contactMethod,
         order.platformInfo[order.contactMethod as keyof PlatformInfo] || '',
         order.items.map(item => `${item.productName} x${item.quantity}`).join('; '),
