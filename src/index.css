@@ -133,7 +133,29 @@ All colors MUST be HSL.
   .hero-gradient {
     background: var(--gradient-hero);
   }
-  
+  /* Ajoutez ceci dans src/index.css ou équivalent */
+.music-float-btn {
+  background: rgba(255,255,255,0.12); /* semi-transparent */
+  backdrop-filter: blur(12px); /* fusionne avec le fond */
+  border: 1px solid rgba(255,255,255,0.18); /* bordure subtile */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* ombre légère */
+  color: inherit;
+  position: fixed;
+}
+.music-float-btn:hover {
+  background: rgba(255,255,255,0.22);
+}
+.music-float-btn {
+  /* ...déjà présent... */
+  color: #fff; /* par défaut blanc */
+}
+.music-float-btn.light {
+  color: #111; /* sur fond clair, noir */
+}
+.music-float-icon {
+  /* Pour forcer l'icône à suivre la couleur du bouton */
+  color: inherit;
+}
   .gold-gradient {
     background: var(--gradient-gold);
   }

@@ -1,0 +1,86 @@
+{
+  "localSongs": [
+    
+      {
+        "id": 1,
+        "title": "Better Together",
+        "artist": "Jack Johnson",
+        "file": "Better_Together.mp3",
+        "duration": "3:28"
+      },
+      {
+        "id": 2,
+        "title": "Latch",
+        "artist": "Disclosure feat. Sam Smith",
+        "file": "Disclosure_-_Latch.mp3",
+        "duration": "4:16"
+      },
+      {
+        "id": 3,
+        "title": "I'm Yours",
+        "artist": "Jason Mraz",
+        "file": "I_m_Yours.mp3",
+        "duration": "4:03"
+      },
+      {
+        "id": 4,
+        "title": "Are You With Me",
+        "artist": "Lost Frequencies",
+        "file": "Lost_Frequencies_-_Are_You_With_Me.mp3",
+        "duration": "2:18"
+      },
+      {
+        "id": 5,
+        "title": "Morning Dew",
+        "artist": "Nora En Pure",
+        "file": "Nora_En_Pure_-_Morning_Dew.mp3",
+        "duration": "3:33"
+      },
+      {
+        "id": 6,
+        "title": "Bloom",
+        "artist": "ODESZA",
+        "file": "ODESZA_-_Bloom.mp3",
+        "duration": "3:15"
+      },
+      {
+        "id": 7,
+        "title": "Sunset Lover",
+        "artist": "Petit Biscuit",
+        "file": "Petit_Biscuit_-_Sunset_Lover.mp3",
+        "duration": "3:57"
+      },
+      {
+        "id": 8,
+        "title": "Mirage",
+        "artist": "Satin Jackets",
+        "file": "Satin_Jackets_-_Mirage.mp3",
+        "duration": "3:13"
+      }
+    
+    
+  ],
+  "externalPlaylists": [
+    {
+      "id": 1,
+      "name": "Spotify - Fitness Motivation",
+      "url": "https://open.spotify.com/playlist/45oqmL3silSTKWTBPahpat?si=9hQ6SmO6RLaOLHZJG1KIXw%0A",
+      "platform": "Spotify",
+      "icon": "🎵"
+    },
+    {
+      "id": 2,
+      "name": "YouTube - Gym Music 2024",
+      "url": "https://youtube.com/playlist?list=PLu0ocO48LFms5WsI1ipaeanxqRjn2fC_5&si=3-dd4TBm_NEIYPNo",
+      "platform": "YouTube",
+      "icon": "📺"
+    },
+    {
+      "id": 3,
+      "name": "Apple Music - Workout Hits",
+      "url": "https://music.apple.com/us/album/workout-hits/1618737417",
+      "platform": "Apple Music",
+      "icon": "🍎"
+    }
+  ]
+}

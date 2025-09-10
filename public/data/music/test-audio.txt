@@ -1,0 +1,13 @@
+Ce fichier sert de placeholder pour les fichiers audio.
+
+Pour tester le lecteur de musique :
+
+1. Ajoutez des fichiers MP3 dans ce dossier
+2. Nommez-les selon la configuration dans playlist.json :
+   - motivation-workout.mp3
+   - energy-boost.mp3  
+   - power-training.mp3
+
+3. Le lecteur de musique détectera automatiquement les fichiers disponibles
+
+Note : Ce fichier peut être supprimé une fois que vous avez ajouté vos fichiers MP3.

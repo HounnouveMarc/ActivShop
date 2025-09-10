@@ -207,6 +207,7 @@ const Shop = () => {
     setShowFloatingCart(true);
   }, []);
 
+
   // Fermer le dropdown des villes quand on clique ailleurs
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -305,6 +306,7 @@ const Shop = () => {
     }
     return getMainCities();
   };
+
 
   const handleContactSupplier = async () => {
     if (!selectedContactMethod) {
@@ -1527,6 +1529,7 @@ const Shop = () => {
         {toastMessage}
       </div>
     )}
+
     </>
   );
 };
